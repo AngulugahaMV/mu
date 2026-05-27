@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AMVMU Digital Profile - Thisum Sathsara</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/Y75tXYMp/amvmu.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── STAR SYSTEM ── */
+    .skill { margin: 14px 0; }
+    .skill-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .skill-name { font-size: 14px; font-weight: 500; }
+    .stars {
+      display: flex;
+      gap: 5px;
+    }
+    .star {
+      font-size: 22px;
+      color: rgba(255,255,255,0.15);
+      transition: color 0.4s ease, text-shadow 0.4s ease, transform 0.3s ease;
+      cursor: default;
+    }
+    .star.filled {
+      color: var(--gold);
+      text-shadow: 0 0 8px rgba(255,215,0,0.6);
+    }
+    .star.filled:nth-child(1) { transition-delay: 0.0s; }
+    .star.filled:nth-child(2) { transition-delay: 0.1s; }
+    .star.filled:nth-child(3) { transition-delay: 0.2s; }
+    .star.filled:nth-child(4) { transition-delay: 0.3s; }
+    .star.filled:nth-child(5) { transition-delay: 0.4s; }
+    .star:hover { transform: scale(1.2); }
+
+    .skill-loading .star { animation: shimmer 1.2s ease-in-out infinite alternate; }
+    @keyframes shimmer {
+      from { color: rgba(255,215,0,0.1); }
+      to   { color: rgba(255,215,0,0.35); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================= LOADER ================= -->
+<div id="loader">
+  <div class="loader-inner">
+    <img src="https://i.ibb.co/Y75tXYMp/amvmu.png" class="loader-logo">
+    <div class="loader-text">We <span id="word">Rise</span></div>
+    <div class="loader-bottom">AMV Media Unit</div>
+  </div>
+</div>
+
+<!-- ================= PASSWORD POPUP ================= -->
+<div id="passwordPopup" class="glass-popup">
+  <div class="glass-box" id="glassBox">
+    <h2>🔒 Verify Access</h2>
+    <p>Enter password to download Digital ID</p>
+    <input type="password" id="passwordInput" placeholder="Enter password">
+    <div class="btn-row">
+      <button onclick="checkPassword()">Unlock</button>
+      <button onclick="closePopup()" class="cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= NAV ================= -->
+<nav>
+  <div class="nav-left">
+    <div class="logo">AMVMU</div>
+    <div class="theme-switcher">
+      <button class="theme-btn active" onclick="setTheme('school')">Default</button>
+      <button class="theme-btn" onclick="setTheme('light')">Light</button>
+      <button class="theme-btn" onclick="setTheme('dark')">Dark</button>
+    </div>
+  </div>
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+  <div class="menu" id="menu">
+    <a href="#home">Home</a>
+    <a href="#profile">Profile</a>
+    <a href="#skills">Skills</a>
+    <a href="#verify">Verification</a>
+    <a href="complaint-page/complaint.html" target="_blank" style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:#FFD700;font-weight:600;padding:6px 14px;border-radius:8px;">⚑ Make Complaint</a>
+    <a href="admin.html" target="_blank" style="background:rgba(225, 215, 0, 0.1);border:1px solid rgba(255, 215, 0, 0.3);color: #FFD700; font-weight: 600; padding: 6px 14px; border-radius: 8px;">Login</a>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<div class="hero" id="home">
+  <img src="https://i.ibb.co/fYMv5SdC/image.png" class="school-logo">
+  <img src="https://i.ibb.co/Y75tXYMp/amvmu.png" class="media-logo">
+  <div class="profile-card">
+    <div class="profile-img" style="background-image:url('https://i.ibb.co/Xf8sdVMy/17.jpg');"></div>
+    <h1>Thisum Sathsara</h1>
+    <p class="role">Member</p>
+  </div>
+  <div class="badge">✔ Official Member</div>
+</div>
+
+<!-- ================= PROFILE ================= -->
+<section id="profile">
+  <h2>Member Information</h2>
+  <div class="card">🆔 ID: AMVMU-017</div>
+  <div class="card">🎓 Grade: 11-B</div>
+  <div class="card">📅 Join: 2026</div>
+  <div class="card">⌛ Valid Until: 01/2027</div>
+  <div class="card">🟢 Status: Active Member</div>
+</section>
+
+<!-- ================= SKILLS ================= -->
+<section id="skills">
+  <h2>Skills</h2>
+
+  <div class="card">🛑 NOTE:<br><br>This star-based rating system is automatically updated based on your performance. If you successfully cover two events, you will earn one star. A default one star has been assigned as you are already trained to this level. However, if any teacher reports misuse of your ID, one star may be deducted from all skills, including the trained star. Your activities are monitored by TIC.<br><br>Some members’ skills are locked because they have not yet received training for those skills. For example, if you are not trained in Photography, that skill will remain locked. To unlock it, you must complete the required training.<br><br>The highest-rated member will be awarded at the Prize Giving or Media Unit Ceremony.</div>
+
+  <!-- Announcing (keep stars) -->
+  <div class="skill" id="skill-announcing">
+    <div class="skill-header">
+      <span class="skill-name">Announcing</span>
+      <div class="stars" style="display:none">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <span class="locked">LOCKED</span>
+    </div>
+  </div>
+
+  <!-- Locked skills — Firebase controls whether they show stars or LOCKED -->
+  <div class="skill skill-locked" id="skill-media">
+    <div class="skill-header">
+      <span class="skill-name">Media Setup (Tech. Support)</span>
+      <div class="stars" style="display:none">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <span class="locked">LOCKED</span>
+    </div>
+  </div>
+
+  <div class="skill skill-locked" id="skill-photography">
+    <div class="skill-header">
+      <span class="skill-name">Photography</span>
+      <div class="stars" style="display:none">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <span class="locked">LOCKED</span>
+    </div>
+  </div>
+
+  <div class="skill skill-locked" id="skill-photo-editing">
+    <div class="skill-header">
+      <span class="skill-name">Photo Editing</span>
+      <div class="stars" style="display:none">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <span class="locked">LOCKED</span>
+    </div>
+  </div>
+
+  <div class="skill skill-locked" id="skill-videography">
+    <div class="skill-header">
+      <span class="skill-name">Videography</span>
+      <div class="stars" style="display:none">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <span class="locked">LOCKED</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TEACHERS IN CHARGE ================= -->
+<section id="tic">
+  <h2>Teachers in Charge</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:10px;">
+ 
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 28px;min-width:160px;flex:1;max-width:200px;">
+      
+      <img src="https://i.ibb.co/4RJcvyKY/1.png"
+     alt="Teacher Name 1"
+     style="width:80px;
+            height:80px;
+            border-radius:50%;
+            object-fit:cover;
+            border:3px solid #FFD700;
+            box-shadow:0 0 16px rgba(255,215,0,0.35);
+            flex-shrink:0;">
+
+      <div style="text-align:center;">
+        <div style="font-weight:600;font-size:15px;">Mr. Wasitha Pathirana</div>
+        <div style="font-size:12px;opacity:0.65;margin-top:4px;">Teacher in Charge</div>
+      </div>
+    </div>
+ 
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 28px;min-width:160px;flex:1;max-width:200px;">
+      
+<img src="https://i.ibb.co/36KK695/2.png"
+     alt="Teacher Name 1"
+     style="width:80px;
+            height:80px;
+            border-radius:50%;
+            object-fit:cover;
+            border:3px solid #FFD700;
+            box-shadow:0 0 16px rgba(255,215,0,0.35);
+            flex-shrink:0;">
+
+      <div style="text-align:center;">
+        <div style="font-weight:600;font-size:15px;">Mrs. Rajika Weerasinghe</div>
+        <div style="font-size:12px;opacity:0.65;margin-top:4px;">Teacher in Charge</div>
+      </div>
+    </div>
+ 
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 28px;min-width:160px;flex:1;max-width:200px;">
+      
+<img src="https://i.ibb.co/ycdfCQjw/3.png"
+     alt="Teacher Name 1"
+     style="width:80px;
+            height:80px;
+            border-radius:50%;
+            object-fit:cover;
+            border:3px solid #FFD700;
+            box-shadow:0 0 16px rgba(255,215,0,0.35);
+            flex-shrink:0;">
+
+      <div style="text-align:center;">
+        <div style="font-weight:600;font-size:15px;">Mrs. Indika Kodikara</div>
+        <div style="font-size:12px;opacity:0.65;margin-top:4px;">Teacher in Charge</div>
+      </div>
+    </div>
+ 
+  </div>
+</section>
+
+<!-- ================= VERIFICATION ================= -->
+<section id="verify">
+  <h2>Official Verification</h2>
+  <div class="card verify">
+    <h3>✔ Verified Member</h3>
+    <p>ID: AMVMU-017</p>
+  </div>
+</section>
+
+<section>
+  <a class="btn" data-id="ids/17.pdf">⬇ Download Digital ID</a>
+</section>
+
+<footer>
+  © 2026 web team AMV<br>
+  Designed by Oshadha D. Liyanage
+</footer>
+
+<button id="topBtn" onclick="scrollTopBtn()">↑</button>
+
+<script src="js/script.js"></script>
+
+<!-- ================= FIREBASE STAR LOADER ================= -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCiPA7NkWdRd_p_1pg1BCUn5fXRxBGRt6w",
+    authDomain: "amvmu-star.firebaseapp.com",
+    projectId: "amvmu-star",
+    storageBucket: "amvmu-star.firebasestorage.app",
+    messagingSenderId: "72794743367",
+    appId: "1:72794743367:web:10951663e81792d7f1c762"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const MEMBER_ID = "AMVMU-017";
+
+  // Maps element ID → Firebase field name (ALL skills listed)
+  const skillMap = {
+    "skill-announcing":    "announcing",
+    "skill-media":         "media_setup",
+    "skill-photography":   "photography",
+    "skill-photo-editing": "photo_editing",
+    "skill-videography":   "videography"
+  };
+
+  function renderSkill(elementId, count, isLocked) {
+    const skillEl = document.getElementById(elementId);
+    if (!skillEl) return;
+
+    const starsDiv   = skillEl.querySelector(".stars");
+    const lockedBadge = skillEl.querySelector(".locked");
+
+    if (isLocked) {
+      // Always show LOCKED, hide stars
+      if (starsDiv)    starsDiv.style.display    = "none";
+      if (lockedBadge) lockedBadge.style.display = "";
+    } else {
+      // Show stars, hide LOCKED badge
+      if (lockedBadge) lockedBadge.style.display = "none";
+      if (starsDiv) {
+        starsDiv.style.display = "flex";
+        starsDiv.querySelectorAll(".star").forEach((star, i) => {
+          star.classList.toggle("filled", i < count);
+        });
+      }
+    }
+  }
+
+  // Live listener — updates instantly when admin changes anything
+  onSnapshot(doc(db, "members", MEMBER_ID), (snap) => {
+    const data = snap.exists() ? snap.data() : {};
+    const lockedSkills = Array.isArray(data.lockedSkills) ? data.lockedSkills : [];
+
+    for (const [elId, field] of Object.entries(skillMap)) {
+      const isLocked = lockedSkills.includes(field);
+      const count    = typeof data[field] === "number" ? data[field] : 1;
+      renderSkill(elId, Math.min(5, Math.max(0, count)), isLocked);
+    }
+  });
+</script>
+
+</body>
+</html>

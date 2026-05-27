@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AMVMU Admin – Star Manager</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/Y75tXYMp/amvmu.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --maroon: #800000;
+      --dark-maroon: #4a0000;
+      --gold: #FFD700;
+      --glass: rgba(255,255,255,0.06);
+      --border: rgba(255,215,0,0.2);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.5);
+      --red: #ef4444;
+      --green: #4ade80;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: Inter, sans-serif;
+      background: #0b0000;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* BG */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(128,0,0,0.3) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 85%, rgba(74,0,0,0.35) 0%, transparent 55%),
+        #0b0000;
+    }
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px);
+      z-index: 0; pointer-events: none;
+      animation: drift 12s ease-in-out infinite;
+    }
+    .orb1 { width:280px;height:280px;background:rgba(128,0,0,0.15);top:-60px;left:-60px; }
+    .orb2 { width:200px;height:200px;background:rgba(255,215,0,0.05);bottom:10%;right:-40px;animation-delay:-6s; }
+    @keyframes drift {
+      0%,100%{transform:translate(0,0)}
+      50%{transform:translate(25px,-15px)}
+    }
+
+    /* LOGIN GATE */
+    #loginGate {
+      position: fixed; inset: 0; z-index: 999;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+    }
+    .login-box {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      width: 320px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+    }
+    .login-box img { width: 60px; margin-bottom: 16px; }
+    .login-box h2 { font-family: Poppins; font-size: 20px; margin-bottom: 6px; }
+    .login-box p { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    .login-box input {
+      width: 100%; padding: 11px 14px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 10px; color: #fff;
+      font-size: 14px; outline: none;
+      margin-bottom: 12px;
+    }
+    .login-box button {
+      width: 100%; padding: 11px;
+      background: var(--gold); color: #000;
+      border: none; border-radius: 10px;
+      font-weight: 700; font-size: 14px;
+      cursor: pointer; transition: 0.2s;
+    }
+    .login-box button:hover { opacity: 0.88; }
+    .login-error {
+      font-size: 12px; color: #ff8888;
+      margin-top: 8px; display: none;
+    }
+
+    /* MAIN */
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 720px; margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* HEADER */
+    header {
+      position: relative; z-index: 1;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,215,0,0.1);
+      max-width: 720px; margin: 0 auto;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-left img { width: 38px; }
+    .header-left h1 { font-family: Poppins; font-size: 18px; font-weight: 700; }
+    .header-left span { font-size: 11px; color: var(--gold); }
+    .logout-btn {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--muted); padding: 7px 14px;
+      border-radius: 8px; cursor: pointer;
+      font-size: 12px; transition: 0.2s;
+    }
+    .logout-btn:hover { color: #fff; }
+
+    /* EYEBROW */
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,215,0,0.07);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 30px; padding: 5px 14px;
+      font-size: 11px; font-weight: 600;
+      color: var(--gold); letter-spacing: 0.07em;
+      text-transform: uppercase; margin: 36px 0 24px;
+    }
+    .dot { width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 1.4s infinite; }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+    h2 { font-family: Poppins; font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+
+    /* CARD */
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-family: Poppins; font-size: 15px; font-weight: 600;
+      margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+    }
+    .card-title .icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+
+    label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
+    input, select {
+      width: 100%; padding: 11px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px; color: #fff;
+      font-size: 14px; outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 16px;
+      font-family: Inter;
+    }
+    input:focus, select:focus { border-color: rgba(255,215,0,0.4); }
+    select option { background: #1a0000; }
+
+    /* STAR PICKER */
+    .star-picker { display: flex; gap: 8px; margin-bottom: 20px; }
+    .sp-star {
+      font-size: 28px; cursor: pointer;
+      color: rgba(255,255,255,0.15);
+      transition: color 0.2s, transform 0.15s, text-shadow 0.2s;
+    }
+    .sp-star.active {
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(255,215,0,0.5);
+    }
+    .sp-star:hover { transform: scale(1.25); }
+
+    .action-btns { display: flex; gap: 10px; }
+    .btn-add {
+      flex: 1; padding: 12px;
+      background: var(--gold); color: #000;
+      border: none; border-radius: 12px;
+      font-weight: 700; font-size: 14px;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-add:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-remove {
+      flex: 1; padding: 12px;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #ff8888;
+      border-radius: 12px;
+      font-weight: 700; font-size: 14px;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-remove:hover { background: rgba(239,68,68,0.2); }
+
+    /* TOAST */
+    #toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: rgba(20,20,20,0.95);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; padding: 12px 22px;
+      font-size: 13px; font-weight: 500;
+      z-index: 9999; transition: transform 0.35s ease, opacity 0.35s ease;
+      opacity: 0; white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.success { border-color: rgba(74,222,128,0.4); color: var(--green); }
+    #toast.error   { border-color: rgba(239,68,68,0.4);  color: #ff8888; }
+
+    /* MEMBER PREVIEW */
+    #memberPreview {
+      background: rgba(255,215,0,0.05);
+      border: 1px solid rgba(255,215,0,0.15);
+      border-radius: 12px; padding: 14px 18px;
+      margin-bottom: 16px; display: none;
+    }
+    #memberPreview .mp-name { font-weight: 600; font-size: 15px; }
+    #memberPreview .mp-stars { margin-top: 8px; }
+    #memberPreview .mp-skill-row {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 13px;
+    }
+    #memberPreview .mp-skill-row:last-child { border-bottom: none; }
+    #memberPreview .mini-stars { color: var(--gold); font-size: 13px; letter-spacing: 1px; }
+
+    /* DIVIDER */
+    hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 6px 0 20px; }
+
+    /* LOCKED SKILL */
+    .mp-skill-row.locked { opacity: 0.45; }
+    .lock-badge {
+      font-size: 11px; background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px; padding: 2px 7px; color: var(--muted);
+      margin-left: 6px;
+    }
+    select option.locked-option { color: #666; }
+    .skill-lock-row {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 13px;
+    }
+    .skill-lock-row:last-child { border-bottom: none; }
+    .lock-toggle {
+      background: none; border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; padding: 4px 12px;
+      color: var(--muted); font-size: 12px; cursor: pointer;
+      transition: 0.2s;
+    }
+    .lock-toggle.is-locked {
+      border-color: rgba(239,68,68,0.4); color: #ff8888;
+      background: rgba(239,68,68,0.08);
+    }
+    .lock-toggle:hover { opacity: 0.8; }
+
+    /* footer */
+    footer {
+      text-align:center;
+      padding:30px;
+      font-size:12px;
+      color:rgba(255,255,255,0.25);
+      position:relative;
+      z-index:1;
+    }
+
+    @keyframes shake {
+      0%{transform:translateX(0)}20%{transform:translateX(-8px)}
+      40%{transform:translateX(8px)}60%{transform:translateX(-8px)}
+      80%{transform:translateX(8px)}100%{transform:translateX(0)}
+    }
+
+    /* ── NOTIFICATION BELL ── */
+    .header-right { display:flex; align-items:center; gap:10px; }
+    .bell-btn {
+      position: relative;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 10px;
+      width: 40px; height: 40px;
+      display: flex; align-items:center; justify-content:center;
+      cursor: pointer; font-size: 18px;
+      transition: background 0.2s;
+    }
+    .bell-btn:hover { background: rgba(255,215,0,0.1); }
+    .bell-badge {
+      position: absolute; top: -6px; right: -6px;
+      background: #ef4444; color: #fff;
+      border-radius: 50%; width: 18px; height: 18px;
+      font-size: 10px; font-weight: 700;
+      display: flex; align-items:center; justify-content:center;
+      border: 2px solid #0b0000;
+      display: none;
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+
+    /* ── COMPLAINTS INBOX ── */
+    #complaintsSection { display: none; }
+    .complaint-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,215,0,0.12);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .complaint-item:hover { border-color: rgba(255,215,0,0.25); }
+    .complaint-item.unread { border-left: 3px solid var(--gold); }
+    .ci-top {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; gap: 10px; margin-bottom: 10px;
+    }
+    .ci-id {
+      font-family: Poppins; font-size: 14px; font-weight: 600;
+      color: var(--gold);
+    }
+    .ci-severity {
+      font-size: 10px; font-weight: 700; letter-spacing:0.06em;
+      padding: 3px 9px; border-radius: 20px; text-transform: uppercase;
+    }
+    .sev-low    { background:rgba(74,222,128,0.12); color:#4ade80; border:1px solid rgba(74,222,128,0.3); }
+    .sev-medium { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); }
+    .sev-high   { background:rgba(239,68,68,0.12);  color:#f87171; border:1px solid rgba(239,68,68,0.3); }
+    .ci-meta { font-size:12px; color:var(--muted); margin-bottom:6px; }
+    .ci-desc { font-size:13px; color:rgba(255,255,255,0.75); line-height:1.5; margin-bottom:12px; }
+    .ci-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .btn-deduct {
+      padding: 7px 14px;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.35);
+      color: #f87171; border-radius: 8px;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-deduct:hover { background: rgba(239,68,68,0.22); }
+    .btn-dismiss {
+      padding: 7px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted); border-radius: 8px;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-dismiss:hover { color:#fff; }
+    .btn-load-id {
+      padding: 7px 14px;
+      background: rgba(255,215,0,0.08);
+      border: 1px solid rgba(255,215,0,0.25);
+      color: var(--gold); border-radius: 8px;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-load-id:hover { background: rgba(255,215,0,0.15); }
+    .no-complaints {
+      text-align:center; padding:30px;
+      color:var(--muted); font-size:13px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<!-- LOGIN GATE -->
+<div id="loginGate">
+  <div class="login-box">
+    <img src="https://i.ibb.co/Y75tXYMp/amvmu.png" alt="AMVMU">
+    <h2>Admin Access</h2>
+    <p>AMVMU Star Management Panel</p>
+    <input type="password" id="adminPassInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()">
+    <button onclick="adminLogin()">Enter Panel</button>
+    <div class="login-error" id="loginError">❌ Incorrect password</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <img src="https://i.ibb.co/Y75tXYMp/amvmu.png" alt="AMVMU">
+    <div>
+      <h1>Star Manager</h1>
+      <span>AMVMU Admin Panel</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="bell-btn" onclick="toggleComplaints()" title="Complaints Inbox">
+      🔔
+      <span class="bell-badge" id="bellBadge">0</span>
+    </button>
+    <button class="logout-btn" onclick="adminLogout()">Logout</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="eyebrow"><div class="dot"></div> Admin Console</div>
+  <h2>Manage Member Stars</h2>
+
+  <!-- LOOKUP CARD -->
+  <div class="card">
+    <div class="card-title"><div class="icon">🔍</div> Member Lookup</div>
+    <label>Member ID</label>
+    <input type="text" id="lookupId" value="AMVMU-" oninput="this.value=this.value.toUpperCase();lookupMember()">
+    <div id="memberPreview"></div>
+  </div>
+
+  <!-- STAR ACTION CARD -->
+  <div class="card">
+    <div class="card-title"><div class="icon">★</div> Add / Remove Stars</div>
+
+    <label>Select Skill</label>
+    <select id="skillSelect">
+      <option value="announcing">Announcing</option>
+      <option value="media_setup">Media Setup (Tech. Support)</option>
+      <option value="photography">Photography</option>
+      <option value="photo_editing">Photo Editing</option>
+      <option value="videography">Videography</option>
+    </select>
+
+    <label>Set Stars (tap to select)</label>
+    <div class="star-picker" id="starPicker">
+      <span class="sp-star active" onclick="pickStar(1)">★</span>
+      <span class="sp-star" onclick="pickStar(2)">★</span>
+      <span class="sp-star" onclick="pickStar(3)">★</span>
+      <span class="sp-star" onclick="pickStar(4)">★</span>
+      <span class="sp-star" onclick="pickStar(5)">★</span>
+    </div>
+
+    <hr>
+
+    <div class="action-btns">
+      <button class="btn-add" onclick="updateStars('add')">＋ Add a Star</button>
+      <button class="btn-remove" onclick="updateStars('remove')">− Remove a Star</button>
+    </div>
+
+  </div>
+
+  <!-- LOCK SKILLS CARD -->
+  <div class="card" id="lockCard" style="display:none;">
+    <div class="card-title"><div class="icon">🔒</div> Lock / Unlock Skills</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Locked skills cannot have stars changed. Lock skills the member hasn't trained in.</p>
+    <div id="lockSkillRows"></div>
+  </div>
+
+  <!-- SET EXACT CARD -->
+  <div class="card">
+    <div class="card-title"><div class="icon">✎</div> Set Exact Stars</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Use this to set a precise star count for a skill (e.g. after resolving a complaint).</p>
+    <label>Skill</label>
+    <select id="exactSkillSelect">
+      <option value="announcing">Announcing</option>
+      <option value="media_setup">Media Setup (Tech. Support)</option>
+      <option value="photography">Photography</option>
+      <option value="photo_editing">Photo Editing</option>
+      <option value="videography">Videography</option>
+    </select>
+    <label>Star Count (1–5)</label>
+    <div class="star-picker" id="exactStarPicker">
+      <span class="sp-star active" onclick="pickExactStar(1)">★</span>
+      <span class="sp-star" onclick="pickExactStar(2)">★</span>
+      <span class="sp-star" onclick="pickExactStar(3)">★</span>
+      <span class="sp-star" onclick="pickExactStar(4)">★</span>
+      <span class="sp-star" onclick="pickExactStar(5)">★</span>
+    </div>
+    <button class="btn-add" onclick="setExactStars()" style="width:100%;margin-top:4px;">Set Stars</button>
+  </div>
+
+  <!-- COMPLAINTS INBOX -->
+  <div id="complaintsSection">
+    <div class="eyebrow"><div class="dot"></div> Complaints Inbox</div>
+    <h2>Member Complaints</h2>
+    <div class="card">
+      <div class="card-title"><div class="icon">⚑</div> Incoming Complaints</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">
+        Real-time complaints submitted by teachers or students. Review and take action below.
+      </p>
+      <div id="complaintsList"><div class="no-complaints">Loading complaints…</div></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<footer>
+  © 2026 web team AMV<br>
+  Designed by Pixel Craft | Oshadha D. Liyanage
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, query, orderBy, writeBatch, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCiPA7NkWdRd_p_1pg1BCUn5fXRxBGRt6w",
+    authDomain: "amvmu-star.firebaseapp.com",
+    projectId: "amvmu-star",
+    storageBucket: "amvmu-star.firebasestorage.app",
+    messagingSenderId: "72794743367",
+    appId: "1:72794743367:web:10951663e81792d7f1c762"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const ADMIN_PASS = "ticamvmu";
+  const SKILLS = ["announcing","media_setup","photography","photo_editing","videography"];
+  const SKILL_LABELS = {
+    announcing:"Announcing", media_setup:"Media Setup (Tech. Support)",
+    photography:"Photography", photo_editing:"Photo Editing", videography:"Videography"
+  };
+
+  let pickedStar = 1;
+  let pickedExactStar = 1;
+  let currentMemberData = null;
+  let currentLockedSkills = [];
+
+  // ── helpers ──────────────────────────────────────────────
+  function isLocked(skill) { return currentLockedSkills.includes(skill); }
+
+  function refreshSkillDropdowns() {
+    ["skillSelect","exactSkillSelect"].forEach(selId => {
+      const sel = document.getElementById(selId);
+      if (!sel) return;
+      Array.from(sel.options).forEach(opt => {
+        const locked = currentLockedSkills.includes(opt.value);
+        opt.disabled = locked;
+        opt.text = locked ? `🔒 ${SKILL_LABELS[opt.value]}` : SKILL_LABELS[opt.value];
+      });
+      // if current selection is locked, jump to first unlocked
+      if (sel.options[sel.selectedIndex]?.disabled) {
+        const first = Array.from(sel.options).find(o => !o.disabled);
+        if (first) sel.value = first.value;
+      }
+    });
+  }
+
+  function renderLockCard(id) {
+    const lockCard = document.getElementById("lockCard");
+    const rows = document.getElementById("lockSkillRows");
+    lockCard.style.display = "block";
+    rows.innerHTML = SKILLS.map(sk => {
+      const locked = currentLockedSkills.includes(sk);
+      return `
+        <div class="skill-lock-row">
+          <span>${SKILL_LABELS[sk]}</span>
+          <button class="lock-toggle ${locked ? "is-locked" : ""}"
+                  onclick="window.toggleLock('${id}','${sk}')">
+            ${locked ? "🔒 Locked" : "🔓 Unlocked"}
+          </button>
+        </div>`;
+    }).join("");
+  }
+
+  // ── auth ─────────────────────────────────────────────────
+  window.adminLogin = function() {
+    const pass = document.getElementById("adminPassInput").value;
+    if (pass === ADMIN_PASS) {
+      document.getElementById("loginGate").style.display = "none";
+    } else {
+      const err = document.getElementById("loginError");
+      err.style.display = "block";
+      document.querySelector(".login-box").style.animation = "shake 0.4s ease";
+      setTimeout(() => document.querySelector(".login-box").style.animation = "", 400);
+    }
+  };
+
+  window.adminLogout = function() {
+    document.getElementById("loginGate").style.display = "flex";
+    document.getElementById("adminPassInput").value = "";
+  };
+
+  // ── star pickers ──────────────────────────────────────────
+  window.pickStar = function(n) {
+    pickedStar = n;
+    document.querySelectorAll("#starPicker .sp-star").forEach((s,i) => s.classList.toggle("active", i < n));
+  };
+
+  window.pickExactStar = function(n) {
+    pickedExactStar = n;
+    document.querySelectorAll("#exactStarPicker .sp-star").forEach((s,i) => s.classList.toggle("active", i < n));
+  };
+
+  // ── lookup ────────────────────────────────────────────────
+  window.lookupMember = async function() {
+    const id = document.getElementById("lookupId").value.trim().toUpperCase();
+    const preview = document.getElementById("memberPreview");
+    if (!id.startsWith("AMVMU-") || id.length < 9) {
+      preview.style.display = "none";
+      document.getElementById("lockCard").style.display = "none";
+      currentLockedSkills = [];
+      refreshSkillDropdowns();
+      return;
+    }
+
+    try {
+      const snap = await getDoc(doc(db, "members", id));
+      if (snap.exists()) {
+        const d = snap.data();
+        currentMemberData = d;
+        currentLockedSkills = Array.isArray(d.lockedSkills) ? d.lockedSkills : [];
+
+        let rows = SKILLS.map(sk => {
+          const count = typeof d[sk] === "number" ? d[sk] : 1;
+          const locked = currentLockedSkills.includes(sk);
+          return `<div class="mp-skill-row ${locked ? "locked" : ""}">
+            <span>${SKILL_LABELS[sk]}</span>
+            ${locked
+              ? `<span class="lock-badge" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.35);color:#ff8888;font-size:12px;padding:3px 10px;border-radius:8px;border:1px solid;">🔒 LOCKED</span>`
+              : `<span class="mini-stars">${"★".repeat(count)}${"☆".repeat(5-count)}</span>`
+            }
+          </div>`;
+        }).join("");
+
+        preview.innerHTML = `<div class="mp-name">📋 ${id}</div><div class="mp-stars">${rows}</div>`;
+        preview.style.display = "block";
+      } else {
+        currentMemberData = null;
+        currentLockedSkills = [];
+        preview.innerHTML = `<div style="font-size:13px;color:var(--muted);">No record found. Stars will default to 1 on first update.</div>`;
+        preview.style.display = "block";
+      }
+      refreshSkillDropdowns();
+      renderLockCard(id);
+    } catch(e) {
+      showToast("Error fetching member data", "error");
+    }
+  };
+
+  // ── toggle lock ───────────────────────────────────────────
+  window.toggleLock = async function(id, skill) {
+    try {
+      const ref = doc(db, "members", id);
+      const snap = await getDoc(ref);
+      let locked = Array.isArray(snap.exists() && snap.data().lockedSkills) ? snap.data().lockedSkills : [];
+      if (locked.includes(skill)) {
+        locked = locked.filter(s => s !== skill);
+      } else {
+        locked = [...locked, skill];
+      }
+      if (snap.exists()) {
+        await updateDoc(ref, { lockedSkills: locked });
+      } else {
+        const defaults = {};
+        SKILLS.forEach(s => defaults[s] = 1);
+        defaults.lockedSkills = locked;
+        await setDoc(ref, defaults);
+      }
+      currentLockedSkills = locked;
+      refreshSkillDropdowns();
+      renderLockCard(id);
+      showToast(`${locked.includes(skill) ? "🔒 Locked" : "🔓 Unlocked"} — ${SKILL_LABELS[skill]}`, "success");
+      window.lookupMember();
+    } catch(e) {
+      showToast("Failed to update lock", "error");
+    }
+  };
+
+  // ── update stars ──────────────────────────────────────────
+  window.updateStars = async function(action) {
+    const id = document.getElementById("lookupId").value.trim().toUpperCase();
+    const skill = document.getElementById("skillSelect").value;
+    if (!id.startsWith("AMVMU-") || id.length < 8) { showToast("Enter a valid Member ID", "error"); return; }
+    if (isLocked(skill)) { showToast(`🔒 ${SKILL_LABELS[skill]} is locked`, "error"); return; }
+
+    try {
+      const ref = doc(db, "members", id);
+      const snap = await getDoc(ref);
+      let current = 1;
+      if (snap.exists() && typeof snap.data()[skill] === "number") current = snap.data()[skill];
+      let newVal = action === "add" ? Math.min(5, current + 1) : Math.max(0, current - 1);
+      if (snap.exists()) {
+        await updateDoc(ref, { [skill]: newVal });
+      } else {
+        const defaults = {};
+        SKILLS.forEach(s => defaults[s] = 1);
+        defaults[skill] = newVal;
+        await setDoc(ref, defaults);
+      }
+      showToast(`${action === "add" ? "⭐ Star added" : "✖ Star removed"} — ${SKILL_LABELS[skill]}: ${newVal}/5`, "success");
+      window.lookupMember();
+    } catch(e) {
+      showToast("Failed to update stars", "error");
+    }
+  };
+
+  // ── set exact ─────────────────────────────────────────────
+  window.setExactStars = async function() {
+    const id = document.getElementById("lookupId").value.trim().toUpperCase();
+    const skill = document.getElementById("exactSkillSelect").value;
+    if (!id.startsWith("AMVMU-") || id.length < 8) { showToast("Enter a valid Member ID first", "error"); return; }
+    if (isLocked(skill)) { showToast(`🔒 ${SKILL_LABELS[skill]} is locked`, "error"); return; }
+
+    try {
+      const ref = doc(db, "members", id);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        await updateDoc(ref, { [skill]: pickedExactStar });
+      } else {
+        const defaults = {};
+        SKILLS.forEach(s => defaults[s] = 1);
+        defaults[skill] = pickedExactStar;
+        await setDoc(ref, defaults);
+      }
+      showToast(`✅ Set ${SKILL_LABELS[skill]} to ${pickedExactStar} star(s)`, "success");
+      window.lookupMember();
+    } catch(e) {
+      showToast("Failed to set stars", "error");
+    }
+  };
+
+  // ── toast ─────────────────────────────────────────────────
+  function showToast(msg, type = "success") {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = `show ${type}`;
+    setTimeout(() => { t.className = ""; }, 3000);
+  }
+  window.showToast = showToast;
+
+  // ── COMPLAINTS INBOX ──────────────────────────────────────
+  let complaintsVisible = false;
+  let allComplaints = [];
+
+  window.toggleComplaints = function() {
+    complaintsVisible = !complaintsVisible;
+    document.getElementById("complaintsSection").style.display = complaintsVisible ? "block" : "none";
+    if (complaintsVisible) {
+      document.getElementById("complaintsSection").scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const severityClass = { low: "sev-low", medium: "sev-medium", high: "sev-high" };
+
+  function renderComplaints(complaints) {
+    const list = document.getElementById("complaintsList");
+    const badge = document.getElementById("bellBadge");
+
+    const unread = complaints.filter(c => !c.read).length;
+    if (unread > 0) {
+      badge.textContent = unread;
+      badge.style.display = "flex";
+    } else {
+      badge.style.display = "none";
+    }
+
+    if (complaints.length === 0) {
+      list.innerHTML = `<div class="no-complaints">✅ No complaints yet.</div>`;
+      return;
+    }
+
+    list.innerHTML = complaints.map(c => {
+      const sev = (c.severity || "low").toLowerCase();
+      const sevClass = severityClass[sev] || "sev-low";
+      const date = c.submittedAt?.toDate ? c.submittedAt.toDate().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }) : (c.date || "Unknown date");
+      return `
+        <div class="complaint-item ${c.read ? "" : "unread"}" id="ci-${c.id}">
+          <div class="ci-top">
+            <div>
+              <div class="ci-id">⚑ ${c.accused_id || "Unknown ID"}</div>
+              <div class="ci-meta">
+                ${c.accused_name ? `<strong>${c.accused_name}</strong> · ` : ""}
+                ${c.misuse_type || "General complaint"} · ${date}
+                ${c.reporter && c.reporter !== "Anonymous" ? ` · Reported by: ${c.reporter}` : " · Anonymous"}
+              </div>
+            </div>
+            <span class="ci-severity ${sevClass}">${sev}</span>
+          </div>
+          ${c.description ? `<div class="ci-desc">${c.description}</div>` : ""}
+          <div class="ci-actions">
+            <button class="btn-load-id" onclick="loadComplaintMember('${c.accused_id}')">🔍 Load Member</button>
+            <button class="btn-deduct" onclick="deductAndDismiss('${c.id}', '${c.accused_id}')">★ Deduct Star & Dismiss</button>
+            <button class="btn-dismiss" onclick="dismissComplaint('${c.id}')">✓ Dismiss</button>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  // Live listener on complaints collection
+  const complaintsQ = query(collection(db, "complaints"), orderBy("submittedAt", "desc"));
+  onSnapshot(complaintsQ, (snap) => {
+    allComplaints = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderComplaints(allComplaints);
+  });
+
+  // Load member into lookup field
+  window.loadComplaintMember = function(memberId) {
+    if (!memberId) return;
+    document.getElementById("lookupId").value = memberId;
+    window.lookupMember();
+    // Scroll to lookup card
+    document.querySelector(".wrap").scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Dismiss complaint (mark as read)
+  window.dismissComplaint = async function(complaintId) {
+    try {
+      await updateDoc(doc(db, "complaints", complaintId), { read: true });
+      showToast("✓ Complaint dismissed", "success");
+    } catch(e) {
+      showToast("Failed to dismiss", "error");
+    }
+  };
+
+  // Deduct 1 star from ALL skills then dismiss
+  window.deductAndDismiss = async function(complaintId, memberId) {
+    if (!memberId || memberId === "AMVMU-") { showToast("Invalid member ID", "error"); return; }
+    try {
+      const ref = doc(db, "members", memberId);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        const updates = {};
+        SKILLS.forEach(sk => {
+          const val = typeof data[sk] === "number" ? data[sk] : 1;
+          updates[sk] = Math.max(0, val - 1);
+        });
+        await updateDoc(ref, updates);
+      }
+      await updateDoc(doc(db, "complaints", complaintId), { read: true });
+      showToast(`★ Star deducted from ${memberId} & complaint dismissed`, "success");
+      window.lookupMember(); // refresh preview if same member is loaded
+    } catch(e) {
+      showToast("Failed to deduct star", "error");
+    }
+  };
+</script>
+
+</body>
+</html>
